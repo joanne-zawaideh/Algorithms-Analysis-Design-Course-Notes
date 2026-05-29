@@ -1,83 +1,52 @@
-# Dynamic Programming — TA Session Notes
+# Dynamic Programming Review Session Notes
 
-## Introduction
+# A Tip for my fellow colleagues
 
-A lot of students feel that DP is one of the hardest topics in algorithms.
+Although it might feel unfamiliar and out of your comfort zone, try this:
 
-Usually not because the code is difficult, but because when you see a new problem, it is hard to know how to START.
+Instead of memorizing the solutions for the problems given in class and attempting to apply them to new DP problems, focus on learning the thinking process when approaching a DP problem.
 
-So instead of memorizing formulas and tables, we will focus on a process that helps us discover the solution ourselves.
-
-For most DP problems, I try to think about these steps:
-
-1. What choices do I have?
-2. What information matters?
-3. After making a choice, what smaller problem remains?
-4. When does the answer become obvious?
-5. Write the recurrence / optimal structure
-6. How do we know the traversal order?
+Once you learn how and where to start, DP will start feeling logical and you will become more confident.
 
 ---
 
-# 1) What choices do I have?
+# The DP Process
 
-Many DP problems are built around decisions.
+For most DP problems, consider these steps:
 
-Examples:
-
-* take / skip
-* right / down
-* match / don’t match
-
-### Knapsack
-
-At item `i`:
-
-* take item `i`
-* skip item `i`
-
-### Weighted Activity Selection
-
-At activity `i`:
-
-* take activity `i`
-* skip activity `i`
-
-Idea:
-DP recurrences are usually built from exploring these choices.
+1. Define the state
+2. Identify the choices
+3. Build the smaller subproblems
+4. Determine the base cases
+5. Write the recurrence
+6. Determine traversal order
 
 ---
 
-# 2) What information matters?
+# Step 1 — Define the State
 
 Question:
-What information changes the remaining answer?
 
-Or:
+> “What information do I need to describe the remaining problem?”
 
-If we pause the problem right now, what information would another person need to continue solving the problem without re-solving everything?
-
-The information that affects the future answer must be part of the DP state.
+The answer to this question becomes the DP state.
 
 ---
 
 ## Knapsack
 
-Suppose I only tell you:
-“We are currently at item `i`.”
+Question:
 
-Can you continue solving the problem?
+> “If I pause the problem right now, what information do I need to continue solving?”
 
-No.
+We need:
 
-Because different remaining capacities lead to different future answers.
+* the current item
+* the remaining capacity
 
-So we need:
+Knowing only one is not enough; if I only know the current item, how will I know if it fits?
 
-1. which item we reached
-2. remaining capacity
-
-DP state:
+So the state becomes:
 
 ```text
 dp[i][capacity]
@@ -86,32 +55,29 @@ dp[i][capacity]
 Meaning:
 
 ```text
-maximum value obtainable using items 0...i
+maximum value gained
+using items 0...i
 with remaining capacity = capacity
 ```
-
-Idea:
-If changing some information changes the future answer, that information must be in the state.
 
 ---
 
 ## Weighted Activity Selection
 
-Suppose I only tell you:
-“We are currently at activity `i`.”
+Question:
 
-Can you continue solving?
+> “If I tell you we are currently at activity i, can you continue solving?”
 
 Yes.
 
 Because:
 
-* the remaining activities are already known
-* compatibility is already determined
+* the remaining activities are known
+* compatibility can be determined
 
-So the activity index alone is enough.
+So only the activity index matters.
 
-DP state:
+State:
 
 ```text
 dp[i]
@@ -120,7 +86,7 @@ dp[i]
 Meaning:
 
 ```text
-maximum value obtainable
+maximum value gained
 considering activities i...n−1
 ```
 
@@ -128,22 +94,21 @@ considering activities i...n−1
 
 ## Collecting Apples
 
-Suppose I only tell you:
-“We are currently at row 0.”
+ 
 
-Can you continue solving?
+Question:
+
+> “If I tell you we are currently at row i, can you continue solving?”
 
 No.
 
-Because `(0,0)` and `(0,1)` are different positions and lead to different future answers.
+Because different columns have different future moves and lead to different answers, and the same goes for rows.
 
-Row alone is not enough.
+ Since different rows and columns lead to different future answers, we need both.
 
-Column alone is also not enough.
+  
 
-So we need both row and column.
-
-DP state:
+State:
 
 ```text
 dp[i][j]
@@ -153,26 +118,85 @@ Meaning:
 
 ```text
 maximum apples collectable
-starting from cell (i,j)
+from cell (0,0) to cell (i,j)
 ```
 
 ---
 
-# 3) After making a choice, what smaller problem remains?
+# Step 2 — Identify the Choices
 
-DP problems are usually reduced into smaller versions of the same problem.
+Examples of choices:
+
+* take / skip
+* right / down
+* match / don’t match
+
+The recurrence usually comes from exploring these choices.
+
+**Note:** there could be a problem with more than two choices!
 
 ---
 
 ## Knapsack
 
-### Choice 1: Take item `i`
+Choices at item `i`:
+
+* take item `i`
+* skip item `i`
+
+---
+
+## Weighted Activity Selection
+
+Choices at activity `i`:
+
+* take activity `i`
+* skip activity `i`
+
+---
+
+## Collecting Apples
+
+In the original problem, the possible moves are:
+
+* right
+* down
+
+However, our DP state represents:
+
+```text
+best answer from (0,0) to (i,j)
+```
+
+and when computing cell `(i,j)`, we ask:
+
+> “From which cells could we have arrived here?”
+
+So the possible previous moves (choices) become:
+
+* the upper cell
+* the left cell
+
+---
+
+# Step 3 — Build the Smaller Subproblems
+
+Question:
+
+> “After making this decision, what smaller problem remains?”
+
+---
+
+## Knapsack
+
+### Take item `i`
 
 What changes?
 
-1. value increases
-2. capacity decreases
-3. move to previous items
+* value increases
+* capacity decreases
+
+And the remaining problem uses previous items.
 
 Smaller problem:
 
@@ -182,26 +206,12 @@ solve(i−1, capacity−w[i])
 
 ---
 
-### Choice 2: Skip item `i`
-
-What changes?
-
-1. capacity stays the same
-2. move to previous items
+### Skip item `i`
 
 Smaller problem:
 
 ```text
 solve(i−1, capacity)
-```
-
-Idea:
-Most DP recurrences are:
-
-```text
-current gain/value
-+
-answer to a smaller subproblem
 ```
 
 ---
@@ -219,7 +229,7 @@ v[i]
 Smaller problem:
 
 ```text
-dp[NEXT(i)]
+solve(NEXT(i))
 ```
 
 ---
@@ -229,29 +239,33 @@ dp[NEXT(i)]
 Smaller problem:
 
 ```text
-dp[i+1]
+solve(i+1)
 ```
 
 ---
 
 ## Collecting Apples
 
-Choices:
+To reach cell `(i,j)`, we could only come from:
 
-* move right
-* move down
+* the upper cell
+* the left cell
 
-Smaller problems:
+So the smaller subproblems become:
 
-* `dp[i][j+1]`
-* `dp[i+1][j]`
+```text
+solve(i−1, j)
+```
 
-Important:
-The current cell value is outside the max because BOTH moves collect the current cell.
+and
+
+```text
+solve(i, j−1)
+```
 
 ---
 
-# 4) Base Cases
+# Step 4 — Determine the Base Cases
 
 At some point, the answer becomes obvious and does not need more computation.
 
@@ -259,19 +273,33 @@ At some point, the answer becomes obvious and does not need more computation.
 
 ## Knapsack
 
-### Capacity = 0
+### No items left
 
-No items fit.
+```text
+i == 0
+```
 
-Answer = 0
+Answer:
+
+```text
+0
+```
 
 ---
 
-### No items left
+### Capacity becomes 0
 
-Nothing left to take.
+No more items can fit when:
 
-Answer = 0
+```text
+capacity == 0
+```
+
+Answer:
+
+```text
+0
+```
 
 ---
 
@@ -285,72 +313,72 @@ i >= n
 
 No activities remain.
 
-Answer = 0
+Answer:
+
+```text
+0
+```
 
 ---
 
-## Fibonacci
+## Collecting Apples
 
 If:
 
-* `i = 0`
-* `i = 1`
-
-Answers are already known:
-
 ```text
-F(0)=0
-F(1)=1
+i == 0 && j == 0
 ```
 
-Idea:
-Base cases stop the recursion.
+we are already at the starting cell.
+
+Answer:
+
+```text
+grid[0][0]
+```
 
 ---
 
-# 5) Write the recurrence / optimal structure
+# Step 5 — Write the Optimal Substructure
 
-Now we combine:
+Now combine:
 
 * the choices
-* the state
+* the current value
 * the smaller subproblems
 * the base cases
 
-to build the recurrence.
-
-Idea:
-
-```text
-DP recurrence =
-current gain/value
-+
-smaller subproblem
-```
+**Note:** Most DP *recurrences* = current value + smaller subproblem
 
 ---
 
 ## Knapsack
 
+### Optimal Substructure
+
 ```text
-dp[i][c] =
+solve(i,c) = 0                          if(i < 0 || c == 0)
+
+solve(i,c) =
 max(
-    v[i] + dp[i−1][c−w[i]],
-    dp[i−1][c]
+    v[i] + solve(i−1,c−w[i]),           otherwise
+    solve(i−1,c)
 )
 ```
-
-Current gain is inside the max because it depends on the choice.
 
 ---
 
 ## Weighted Activity Selection
 
+### Optimal Substructure
+
 ```text
-dp[i] =
+solve(i) = 0                           if(i >= n)  
+
+solve(i) =
 max(
-    v[i] + dp[NEXT(i)],
-    dp[i+1]
+    v[i] + solve(NEXT(i)),             otherwise
+    solve(i+1)
 )
 ```
 
@@ -358,94 +386,93 @@ max(
 
 ## Collecting Apples
 
+### Optimal Substructure
+
 ```text
-dp[i][j] =
+solve(i,j) = grid[i][j]                 if(i == 0 && j == 0) 
+ 
+solve(i,j) =
 grid[i][j]
 +
 max(
-    dp[i+1][j],
-    dp[i][j+1]
+    solve(i−1,j),                       otherwise
+    solve(i,j−1)
 )
 ```
 
-The current cell value is outside the max because we collect it regardless of the move chosen.
-
-Important:
-There is often more than one valid DP definition.
-
-We usually choose the definition that makes:
-
-* the recurrence simpler
-* the transitions more natural
+The current cell value is outside the max because BOTH choices gain the current cell.
 
 ---
 
-# 6) How do we know traversal order?
-
-Traversal order is NOT memorized.
-
-It comes from the dependencies in the recurrence.
+# Step 6 — Determine Traversal Order
 
 Question:
 
-Before computing this state, which states must already be solved?
+> “What states must already exist before computing the current state?”
+
+We compute smaller subproblems first, then use them to compute larger ones.
 
 ---
 
 ## Knapsack
 
+Current state depends on:
+
 ```text
-dp[i][c]
-depends on
-dp[i−1][...]
+i−1
 ```
 
-So previous rows must already exist.
+So previous rows must already exist first.
 
 Traversal:
+
+```text
 top → bottom
+```
+
+---
+
+## Weighted Activity Selection
+
+Current state depends on:
+
+* `i+1`
+* `NEXT(i)`
+
+So future indices must already exist first.
+
+Traversal:
+
+```text
+right → left   or   n−1 → 0
+```
 
 ---
 
 ## Collecting Apples
 
-```text
-dp[i][j]
-depends on:
-- right
-- down
-```
+Current state depends on:
+
+* upper cell
+* left cell
 
 So those cells must already exist first.
 
 Traversal:
-bottom-right → top-left
-
----
-
-## Fibonacci
 
 ```text
-dp[i]
-depends on:
-dp[i−1], dp[i−2]
+top-left → bottom-right
 ```
-
-Traversal:
-left → right
 
 ---
 
-# Final Idea
+# Final Verdict
 
-The goal is NOT to instantly see the recurrence.
-
-Good DP solving is usually a process:
+Steps to solving DP questions:
 
 1. define the state
-2. identify choices
+2. identify the choices
 3. determine the smaller problem
-4. build the recurrence
-5. determine dependencies/traversal
-
-If you repeatedly practice this process, DP problems become much less intimidating.
+4. determine the base cases
+5. build the recurrence
+6. determine traversal order
