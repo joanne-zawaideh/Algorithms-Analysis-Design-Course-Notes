@@ -22,7 +22,8 @@ solve(i, dp):
 	dp[i] = max(dontTake, take)
 
 	return dp[i]
-	
+
+// to get a better idea on how it's implemented
 NEXT(i): 
 	f = i+1, l = N-1
 	ans = N
@@ -79,7 +80,7 @@ solve-wa():
 
 	return dp[N-1]
 
-
+// to get a better idea on how it's implemented
 PREV(i):
 	// search for the last compatible previous activity
 	f = 0, l = i-1
