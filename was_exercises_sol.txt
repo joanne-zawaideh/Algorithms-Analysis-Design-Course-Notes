@@ -14,7 +14,8 @@ solve-wa():
 	return dp[0]
 
 solve(i, dp):
-	if(dp[i] != -1) return dp[i]
+	if(dp[i] != -1) 
+		return dp[i]
 
 	dontTake = solve(i+1, dp)
 	take = v[i] + solve(NEXT(i), dp)
@@ -33,7 +34,7 @@ NEXT(i):
 			l = mid - 1
 		else:
 			// activity starts too early, search right  
-      f = mid + 1
+      		f = mid + 1
 
 	return ans
 
@@ -43,18 +44,15 @@ NEXT(i):
 /*
   - optimal substructure:
 	optimal(i) = {
-			            0						                                    if i < 0
+			            0						                        if i < 0
 			            MAX(optimal(PREV(i)) + v[i], optimal(i-1))	    if i >= 0
 		           }
 
-  - base cases:
-	dp[0] = v[0]
+  - base cases:	dp[0] = v[0]
 
-  - final soltuion:
-	dp[N-1]
+  - final soltuion: dp[N-1]
 
-  - order of traversal:
-	0 .. N-1
+  - order of traversal: 0 .. N-1
 */
 
 // we sort the activities by finish time because dp[i] is the optimal solution considering activities 0 to i and we need dp[PREV(i)]
@@ -70,7 +68,7 @@ solve-wa():
 		dontTake = dp[i-1]
 		take = v[i]
 		if(PREV(i) != -1) 
-      take += dp[PREV(i)]
+      		take += dp[PREV(i)]
 		dp[i] = max(dontTake, take)
 
 	return dp[N-1]
