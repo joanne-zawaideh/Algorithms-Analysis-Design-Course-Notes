@@ -1,6 +1,6 @@
 // Weighted Activity Selection Exercises Solution (pseudocode)
 
-// Exercise 2
+// Exercise 2: Design a top-down memoized solution.
 
 //dp[i] = max value gained w/activities i -> N-1
 solve-wa():
@@ -40,8 +40,14 @@ NEXT(i):
 
 
 
-// Exercise 3
-/*
+/* Exercise 3:
+Assume that OPTIMAL(i) refers to the optimal solution considering the activities
+from 0 to i. Restate the recursive definition of the optimal substructure and then redesign the
+bottom-up solution according to this definition. What are the base cases? Where would the final
+solution be? In what order would the array dp[] be filled?
+*/
+
+/* Solution:
   - optimal substructure:
 	optimal(i) = {
 			            0						                        if i < 0
